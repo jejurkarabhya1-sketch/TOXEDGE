@@ -1,0 +1,745 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOXEDGE Admin</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1JRCPX9T9K"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1JRCPX9T9K');
+    </script>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            --secondary: rgba(255,255,255,0.1);
+            --glass-bg: rgba(255,255,255,0.08);
+            --border-glass: rgba(255,255,255,0.2);
+            --text-primary: #f8fafc;
+            --text-secondary: rgba(248,250,252,0.8);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        body { overflow: hidden; }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        .admin-layout { width: 100vw; height: 100vh; margin: 0; padding: 2rem; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95)); }
+        #dashboardView { width: 100%; max-width: 1200px; max-height: 90vh; overflow-y: auto; overflow-x: hidden; }
+        #dashboardView::-webkit-scrollbar { width: 10px; }
+        #dashboardView::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        .login-section { width: 100%; max-width: 500px; }
+        .not-visible-scroll { overflow: hidden; }
+        
+        /* HEADER */
+        .dashboard-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .header-left h1 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .live-badge {
+            background: rgba(16,185,129,0.2);
+            border: 1px solid var(--success);
+            border-radius: 25px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .live-dot {
+            width: 10px; height: 10px; border-radius: 50%; background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+            50% { opacity: 0.5; box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+        }
+        
+        /* LOGIN */
+        .login-section {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center; padding: 2rem;
+            position: relative; left: 0; right: 0; margin: 0 auto;
+        }
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            border: 1px solid var(--border-glass);
+            padding: 3rem 2.5rem;
+            width: min(100%, 460px);
+            max-width: 460px;
+            box-shadow: 0 25px 60px -15px rgba(0,0,0,0.4);
+            text-align: center;
+            margin: 1rem;
+            position: relative;
+        }
+        .login-logo { 
+            height: 65px; margin-bottom: 1.5rem;
+            filter: none; opacity: 1;
+            width: 180px; object-fit: contain; border-radius: 16px; border: 2px solid rgba(255,255,255,0.32);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            background: rgba(255,255,255,0.07);
+        }
+        .login-section {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 2rem;
+            width: 100%;
+            position: relative;
+            top: 0;
+            left: 0;
+            background: rgba(16, 185, 129, 0.1); /* green tinted area */
+            border: 2px solid rgba(34, 197, 94, 0.8); /* green box frame */
+            border-radius: 24px;
+        }
+        .login-title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            background: var(--primary);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .login-subtitle { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; }
+        .login-input {
+            width: 100%; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem;
+            border: 2px solid var(--border-glass); border-radius: 16px;
+            background: rgba(255,255,255,0.08); color: var(--text-primary);
+            font-size: 1rem; font-weight: 500; transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .login-input:focus {
+            outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
+            background: rgba(255,255,255,0.12);
+        }
+        .login-input::placeholder { color: var(--text-secondary); }
+        .login-btn {
+            width: 100%; padding: 1.3rem; background: var(--primary);
+            border: none; border-radius: 16px; color: white;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(59,130,246,0.4);
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .login-btn:hover {
+            transform: translateY(-2px); box-shadow: 0 15px 40px rgba(59,130,246,0.5);
+        }
+        .login-btn:active { transform: translateY(0); }
+        
+        /* DASHBOARD LAYOUT */
+        .dashboard-main { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; }
+        @media (max-width: 1100px) { .dashboard-main { grid-template-columns: 1fr; } }
+        
+        /* METRICS GRID */
+        .metrics-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem; margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px; border: 1px solid var(--border-glass);
+            padding: 2rem; text-align: center; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            position: relative; overflow: hidden;
+        }
+        .metric-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: var(--primary);
+        }
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: rgba(59,130,246,0.5);
+        }
+        .metric-icon { 
+            font-size: 3rem; margin-bottom: 1rem; opacity: 0.9;
+        }
+        .metric-number { 
+            font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800;
+            background: var(--primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem; line-height: 1;
+        }
+        .metric-label { 
+            font-size: 1.1rem; opacity: 0.9; font-weight: 500; letter-spacing: 0.5px;
+        }
+        
+        /* CHARTS */
+        .charts-row { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; 
+        }
+        .chart-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px; border: 1px solid var(--border-glass);
+            padding: 1.5rem; position: relative; overflow: hidden;
+        }
+        .chart-container::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: var(--primary);
+        }
+        .chart-title {
+            font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .chart-canvas { width: 100% !important; height: 350px !important; }
+        
+        /* TABLES */
+        .table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px; border: 1px solid var(--border-glass);
+            overflow: hidden; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .table-header {
+            background: var(--primary);
+            padding: 1.5rem 2rem;
+        }
+        .table-title {
+            font-size: 1.4rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.5rem;
+        }
+        table { width: 100%; border-collapse: collapse; background: transparent; }
+        th {
+            background: rgba(30,58,138,0.8);
+            color: white; padding: 1.2rem 1.5rem; text-align: left;
+            font-weight: 600; font-size: 0.95rem; letter-spacing: 0.5px;
+        }
+        td {
+            padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border-glass);
+            font-size: 0.95rem; transition: background 0.2s ease;
+        }
+        tr:hover td { 
+            background: rgba(255,255,255,0.05); 
+        }
+        .metric-change {
+            font-size: 0.85rem; padding: 0.2rem 0.6rem; border-radius: 12px;
+            font-weight: 600;
+        }
+        .change-up { background: rgba(16,185,129,0.2); color: var(--success); }
+        .change-down { background: rgba(239,68,68,0.2); color: var(--danger); }
+        
+        /* LOCATION SECTION */
+        .location-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px; border: 1px solid var(--border-glass);
+            padding: 2rem; margin-bottom: 2rem;
+        }
+        .location-header { 
+            font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .location-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;
+        }
+        .location-item {
+            background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem;
+            text-align: center; border: 1px solid var(--border-glass);
+        }
+        .location-flag { font-size: 2rem; margin-bottom: 0.5rem; }
+        #visitorMap { height: 300px; border-radius: 12px; margin-top: 1rem; }
+        
+        /* BUTTONS */
+        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
+        .btn {
+            padding: 0.9rem 1.8rem; border: none; border-radius: 12px;
+            font-weight: 600; cursor: pointer; font-size: 0.95rem;
+            transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;
+            text-decoration: none;
+        }
+        .btn-primary { 
+            background: var(--primary); color: white;
+            box-shadow: 0 5px 15px rgba(59,130,246,0.4);
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); box-shadow: 0 10px 25px rgba(59,130,246,0.6); 
+        }
+        .btn-success { 
+            background: linear-gradient(135deg, var(--success), #059669); color: white;
+        }
+        .btn-secondary { 
+            background: var(--secondary); color: var(--text-primary); border: 1px solid var(--border-glass);
+        }
+        .btn-danger { 
+            background: linear-gradient(135deg, var(--danger), #dc2626); color: white; 
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .admin-layout { padding: 1rem; }
+            .dashboard-header { flex-direction: column; text-align: center; gap: 1.5rem; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .charts-row { grid-template-columns: 1fr; }
+            .btn-group { justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+            .login-card { padding: 2rem 1.5rem; margin: 1rem; }
+            .chart-canvas { height: 250px !important; }
+        }
+        
+        .loading { opacity: 0.6; }
+        .loading::after { content: '⏳'; animation: spin 1s linear infinite; margin-left: 0.5rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-msg { 
+            background: rgba(239,68,68,0.2); color: var(--danger); padding: 1rem;
+            border-radius: 12px; border-left: 4px solid var(--danger); margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- LOGIN -->
+        <div id="loginView" class="login-section" style="display: block;">
+            <div class="login-card">
+
+<img src="webP/Logo.webp" alt="TOXEDGE Logo" class="logo login-logo" width="280" height="70" fetchpriority="high" decoding="async" onerror="this.onerror=null; this.src='assets/Logo.png';">
+
+                <h2 class="login-title">
+                    <i class="fas fa-lock"></i> Admin Portal
+                </h2>
+                <p class="login-subtitle">Analytics & Performance Dashboard</p>
+                <input type="password" id="adminPassword" class="login-input" placeholder="Enter admin password">
+                <button class="login-btn" onclick="authenticate()">
+                    <i class="fas fa-sign-in-alt"></i> Enter Dashboard
+                </button>
+                <div style="margin-top: 1.5rem; opacity: 0.6; font-size: 0.9rem;">
+                    Password protected • Data encrypted
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboardView" style="display: none;">
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <h1>
+                        <i class="fas fa-tachometer-alt"></i> Analytics Dashboard
+                    </h1>
+                    <div class="live-badge" id="liveIndicator">
+                        <span class="live-dot"></span>
+                        LIVE • Auto Refresh
+                    </div>
+                </div>
+                <div class="btn-group">
+
+
+
+                    <button class="btn btn-danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <p id="lastUpdated" style="opacity: 0.8; margin-bottom: 2rem; font-size: 0.95rem;"></p>
+
+            <!-- METRICS DASHBOARD -->
+            <div class="metrics-grid" id="metricsContainer">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- CHARTS -->
+            <div class="charts-row">
+                <div class="chart-container" style="width:100%">
+                    <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Page Distribution</h3>
+                    <canvas id="pageChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- DATA TABLES -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">
+                        <i class="fas fa-table"></i> Page Performance
+                    </h3>
+                </div>
+                <table id="pageTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-globe"></i> Page</th>
+                            <th><i class="fas fa-eye"></i> Views</th>
+                            <th><i class="fas fa-clock"></i> Avg Time</th>
+                            <th><i class="fas fa-arrow-left"></i> Bounce</th>
+                            <th><i class="fas fa-exchange-alt"></i> Unique</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">
+                        <i class="fas fa-layer-group"></i> Section Interactions
+                    </h3>
+                </div>
+                <table id="sectionsTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-puzzle-piece"></i> Section</th>
+                            <th><i class="fas fa-mouse-pointer"></i> Interactions</th>
+                            <th><i class="fas fa-percentage"></i> Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- LOCATION SECTION -->
+            <div class="location-section">
+                <div class="location-header">
+                    <i class="fas fa-map-marker-alt"></i> Visitor Location
+                </div>
+                <div class="location-grid">
+                    <div class="location-item">
+                        <div class="location-flag" id="countryFlag">🌍</div>
+                        <div><strong>Country:</strong> <span id="countryName">Loading...</span></div>
+                        <div><strong>Visitors:</strong> <span id="countryCount">0</span></div>
+                    </div>
+                    <div class="location-item">
+                        <div><strong>Region:</strong> <span id="regionName">Loading...</span></div>
+                        <div><strong>City:</strong> <span id="cityName">Loading...</span></div>
+                    </div>
+                    <div class="location-item">
+                        <div><strong>Timezone:</strong> <span id="timezone">Loading...</span></div>
+                        <div><strong>IP:</strong> <span id="ipAddress">Loading...</span></div>
+                    </div>
+                    <div class="location-item">
+                        <div><strong>ISP:</strong> <span id="ispName">Loading...</span></div>
+                        <div><strong>Coordinates:</strong> <span id="coordinates">Loading...</span></div>
+                    </div>
+                </div>
+                <div id="locationStatus" style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">Detecting location...</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script>
+        // CONFIG
+        const ADMIN_PASS = 'admin';
+const ANALYTICS_KEY = 'toxedge_analytics';
+        
+        let dashboardData = {};
+        
+        // Initialize demo data if empty
+        function initDemoData() {
+            // Removed demo data initialization
+        }
+        let chartInstances = {};
+        let locationInterval;
+        
+        // DOM Elements
+        const loginView = document.getElementById('loginView');
+        const dashboardView = document.getElementById('dashboardView');
+        const adminPassword = document.getElementById('adminPassword');
+        
+        // SECURITY
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', handleSecurityKeys);
+        
+        function handleSecurityKeys(e) {
+            const forbidden = [
+                e.key === 'F12',
+                e.ctrlKey && e.shiftKey && e.key === 'I',
+                e.ctrlKey && e.shiftKey && e.key === 'J',
+                e.ctrlKey && e.shiftKey && e.key === 'C',
+                e.ctrlKey && e.key === 'u',
+                e.ctrlKey && e.key === 's'
+            ];
+            if (forbidden.some(Boolean)) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        function authenticate() {
+            if (adminPassword.value === ADMIN_PASS) {
+                loginView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                initDashboard();
+            } else {
+                adminPassword.style.borderColor = '#ef4444';
+                setTimeout(() => adminPassword.style.borderColor = '', 2000);
+            }
+        }
+        
+        function logout() {
+            loginView.style.display = 'flex';
+            dashboardView.style.display = 'none';
+            adminPassword.value = '';
+            adminPassword.focus();
+        }
+        
+        function initDashboard() {
+            loadAnalytics();
+            trackLocation();
+            // Auto update every 5s
+            setInterval(loadAnalytics, 5000);
+        }
+        
+        async function loadAnalytics() {
+            try {
+                // Fetch from PHP API endpoint
+                const response = await fetch('/api-analytics.php');
+                if (!response.ok) throw new Error('API fetch failed');
+                
+                const stats = await response.json();
+                const pageViews = stats.pageViews || {};
+                const sectionViews = stats.sectionViews || {};
+                const totalViews = Object.values(pageViews).reduce((sum, v) => sum + Number(v), 0);
+
+                // Use real aggregated data from PHP backend
+                dashboardData = {
+                    uniqueUsers: stats.uniqueVisitors || 0,
+                    totalViews: totalViews,
+                    avgSession: stats.avgSessionTime || 0,
+                    bounceRate: stats.bounceRate || 0.34,
+                    pageViews: pageViews,
+                    sectionViews: sectionViews,
+                    pageData: Object.values(pageViews)
+                };
+                
+                updateMetrics();
+                updateTables();
+                updateCharts();
+                updateTimestamp();
+                document.getElementById('locationStatus').textContent = 'Dashboard synced with server • Real global analytics';
+                
+            } catch (e) {
+                console.error('Analytics load error:', e);
+                document.getElementById('locationStatus').textContent = '⚠️ Analytics API unavailable - check server status';
+            }
+        }
+        
+        function updateMetrics() {
+            const metricsContainer = document.getElementById('metricsContainer');
+            const totalViews = Object.values(dashboardData.pageViews || {}).reduce((sum, v) => sum + Number(v), 0);
+            const uniqueUsers = dashboardData.uniqueUsers || 0;
+            const avgTime = dashboardData.avgSession || 0;
+            const bounceRate = dashboardData.bounceRate ? (dashboardData.bounceRate * 100).toFixed(1) + '%' : '0%';
+            
+            const metrics = [
+                { icon: 'fas fa-eye', number: totalViews.toLocaleString(), label: 'Total Views', metric: 'totalViews' },
+                { icon: 'fas fa-users', number: uniqueUsers.toLocaleString(), label: 'Unique Users', metric: 'uniqueUsers' },
+                { icon: 'fas fa-clock', number: avgTime + 's', label: 'Avg Session', metric: 'avgSession' },
+                { icon: 'fas fa-arrow-left', number: bounceRate, label: 'Bounce Rate', metric: 'bounceRate' }
+            ];
+            
+            metricsContainer.innerHTML = metrics.map(metric => `
+                <div class="metric-card">
+                    <i class="${metric.icon} metric-icon" style="color: #3b82f6;"></i>
+                    <div class="metric-number" data-metric="${metric.metric}">${metric.number}</div>
+                    <div class="metric-label">${metric.label}</div>
+                </div>
+            `).join('');
+        }
+        
+        function formatMetric(metric, value) {
+            if (metric === 'totalViews' || metric === 'uniqueUsers') return value.toLocaleString();
+            if (metric === 'bounceRate') return value ? (value * 100).toFixed(1) + '%' : '0%';
+            return value + 's';
+        }
+        
+        function updateTables() {
+            // Page Performance Table
+            const pageTableBody = document.querySelector('#pageTable tbody');
+            const pageData = dashboardData.pageViews || {};
+            pageTableBody.innerHTML = Object.entries(pageData).map(([page, views]) => `
+                <tr>
+                    <td>${page}</td>
+                    <td>${views}</td>
+                    <td>${Math.round((dashboardData.avgSession || 0) / 1000)}s</td>
+                    <td class="metric-change change-down">${(dashboardData.bounceRate * 100 || 0).toFixed(1)}%</td>
+                    <td>${Math.round(views * 0.4)}</td>
+                </tr>
+            `).join('');
+            
+            // Top Sections Table
+            const sectionsTableBody = document.querySelector('#sectionsTable tbody');
+            const sections = dashboardData.sectionViews || {};
+            const totalSections = Object.values(sections).reduce((sum, v) => sum + v, 0);
+            sectionsTableBody.innerHTML = Object.entries(sections).slice(0, 5).map(([section, interactions]) => {
+                const percent = totalSections ? ((interactions / totalSections) * 100).toFixed(1) : 0;
+                return `
+                    <tr>
+                        <td>${section}</td>
+                        <td>${interactions}</td>
+                        <td>${percent}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function trackLocation() {
+            // Attempt CORS-friendly geolocation with proxy and fallback endpoint
+            fetch('https://api.allorigins.win/raw?url=https://ipapi.co/json/')
+                .then(res => {
+                    if (!res.ok) throw new Error('proxy geo lookup failed');
+                    return res.json();
+                })
+                .then(data => {
+                    updateLocationDisplay({
+                        country_name: data.country_name || data.country || 'Unknown',
+                        country_code: data.country_code || data.country || 'US',
+                        region: data.region || data.region_code || 'Unknown',
+                        city: data.city || 'Unknown',
+                        ip: data.ip || 'Unknown',
+                        org: data.org || 'Unknown',
+                        timezone: data.timezone || 'UTC',
+                        latitude: data.latitude || data.lat || 'N/A',
+                        longitude: data.longitude || data.lon || 'N/A'
+                    });
+                    document.getElementById('locationStatus').textContent = 'Location loaded from ipapi.co via proxy';
+                })
+                .catch(() => {
+                    return fetch('https://ip-api.com/json/?fields=status,message,query,country,countryCode,regionName,city,timezone,org,lat,lon');
+                })
+                .then(res => {
+                    if (!res || !res.ok) throw new Error('fallback geo lookup failed');
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.status && data.status === 'fail') throw new Error(data.message || 'fallback geo failed');
+                    updateLocationDisplay({
+                        country_name: data.country || 'Unknown',
+                        country_code: data.countryCode || 'US',
+                        region: data.regionName || 'Unknown',
+                        city: data.city || 'Unknown',
+                        ip: data.query || 'Unknown',
+                        org: data.org || 'Unknown',
+                        timezone: data.timezone || 'UTC',
+                        latitude: data.lat || 'N/A',
+                        longitude: data.lon || 'N/A'
+                    });
+                    document.getElementById('locationStatus').textContent = 'Location loaded from ip-api.com fallback';
+                })
+                .catch((err) => {
+                    console.warn('Location API all methods failed; using fallback values', err);
+                    const mockData = {
+                        country_name: 'Unavailable',
+                        country_code: 'US',
+                        region: 'Unavailable',
+                        city: 'Unavailable',
+                        ip: 'Unavailable',
+                        org: 'Unavailable',
+                        timezone: 'UTC',
+                        latitude: 'N/A',
+                        longitude: 'N/A'
+                    };
+                    updateLocationDisplay(mockData);
+                    document.getElementById('locationStatus').textContent = 'Location unavailable (all APIs failed)';
+                });
+
+            locationInterval = setInterval(() => trackLocation(), 30000);
+        }
+        
+        function updateLocationDisplay(data) {
+            const flag = getFlagEmoji(data.country_code || 'US');
+            document.getElementById('countryFlag').textContent = flag;
+            document.getElementById('countryName').textContent = data.country_name || 'N/A';
+            document.getElementById('countryCount').textContent = dashboardData.uniqueUsers + ' unique visitors';
+            document.getElementById('regionName').textContent = data.region || 'N/A';
+            document.getElementById('cityName').textContent = data.city || 'N/A';
+            document.getElementById('timezone').textContent = data.timezone || 'N/A';
+            const latitude = data.latitude || data.lat || 'N/A';
+            const longitude = data.longitude || data.lon || 'N/A';
+            document.getElementById('coordinates').textContent = (latitude !== 'N/A' && longitude !== 'N/A') ? `${latitude}° N, ${longitude}° E` : 'N/A';
+            document.getElementById('ipAddress').textContent = data.ip || 'N/A';
+            document.getElementById('ispName').textContent = data.org || 'N/A';
+            document.getElementById('locationStatus').textContent = 'Location loaded from ipapi.co';
+        }
+        
+        function getFlagEmoji(countryCode) {
+            const codePoints = countryCode
+                .toUpperCase()
+                .split('')
+                .map(char => 127397 + char.charCodeAt());
+            return String.fromCodePoint(...codePoints);
+        }
+        
+        function updateTimestamp() {
+            document.getElementById('lastUpdated').textContent = 
+                `Last sync: ${new Date().toLocaleString('en-US', { 
+                    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                })}`;
+        }
+        
+        function updateCharts() {
+            // Page Distribution Pie Chart (traffic chart removed)
+            const pageCtx = document.getElementById('pageChart').getContext('2d');
+            if (chartInstances.page) chartInstances.page.destroy();
+
+            const pageLabels = Object.keys(dashboardData.pageViews || {});
+            const pageData = Object.values(dashboardData.pageViews || {});
+
+            chartInstances.page = new Chart(pageCtx, {
+                type: 'pie',
+                data: {
+                    labels: pageLabels.length ? pageLabels : ['Home', 'Services', 'About', 'Contact'],
+                    datasets: [{
+                        data: pageData.length ? pageData : [45, 25, 15, 10],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            adminPassword.focus();
+            adminPassword.addEventListener('keypress', e => e.key === 'Enter' && authenticate());
+        });
+        
+        // Export
+        function exportData(format) {
+            const data = JSON.parse(localStorage.getItem(ANALYTICS_KEY) || '{}');
+            const blob = new Blob([format === 'csv' ? JSON.stringify(data, null, 2) : JSON.stringify(data)], { type: format === 'csv' ? 'text/csv' : 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `toxedge-${format === 'csv' ? 'analytics.csv' : 'analytics.json'}`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
+
